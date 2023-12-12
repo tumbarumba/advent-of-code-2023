@@ -15,27 +15,33 @@ class Day01Test {
         @JvmStatic
         fun extractArguments(): Stream<Arguments> =
             Stream.of(
-                Arguments.of("two934seven1", '9', '1', 91),
-                Arguments.of("8825eightknfv", '8', '5', 85),
-                Arguments.of("4twofour", '4', '4', 44)
+                Arguments.of("two934seven1", "293471", '2', '1', 21),
+                Arguments.of("8825eightknfv", "88258knfv", '8', '8', 88),
+                Arguments.of("4twofour", "424", '4', '4', 44)
             )
     }
 
     @ParameterizedTest
     @MethodSource("extractArguments")
-    fun testExtractFirstDigit(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
-        assertEquals(firstDigit, day01.getFirstDigit(data))
+    fun testNormaliseData(data: String, normalData: String, firstDigit: Char, lastDigit: Char, value: Int) {
+        assertEquals(normalData, day01.normalise(data))
     }
 
     @ParameterizedTest
     @MethodSource("extractArguments")
-    fun testExtractLastDigit(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
-        assertEquals(lastDigit, day01.getLastDigit(data))
+    fun testExtractFirstDigit(data: String, normalData: String, firstDigit: Char, lastDigit: Char, value: Int) {
+        assertEquals(firstDigit, day01.getFirstDigit(normalData))
     }
 
     @ParameterizedTest
     @MethodSource("extractArguments")
-    fun testExtractValue(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
+    fun testExtractLastDigit(data: String, normalData: String, firstDigit: Char, lastDigit: Char, value: Int) {
+        assertEquals(lastDigit, day01.getLastDigit(normalData))
+    }
+
+    @ParameterizedTest
+    @MethodSource("extractArguments")
+    fun testExtractValue(data: String, normalData: String, firstDigit: Char, lastDigit: Char, value: Int) {
         assertEquals(value, day01.getValue(data))
     }
 
