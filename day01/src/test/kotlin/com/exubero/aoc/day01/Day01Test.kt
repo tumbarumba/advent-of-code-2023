@@ -26,4 +26,10 @@ class Day01Test {
     fun testExtractFirstDigit(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
         assertEquals(firstDigit, day01.getFirstDigit(data))
     }
+
+    @ParameterizedTest
+    @MethodSource("extractArguments")
+    fun testExtractLastDigit(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
+        assertEquals(lastDigit, day01.getLastDigit(data))
+    }
 }
