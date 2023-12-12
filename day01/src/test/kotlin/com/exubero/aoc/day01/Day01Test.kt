@@ -15,37 +15,34 @@ class Day01Test {
         @JvmStatic
         fun extractArguments(): Stream<Arguments> =
             Stream.of(
-                Arguments.of("two934seven1", "293471", '2', '1', 21),
-                Arguments.of("8825eightknfv", "88258knfv", '8', '8', 88),
-                Arguments.of("4twofour", "424", '4', '4', 44)
+                Arguments.of("two1nine", '2', '9', 29),
+                Arguments.of("eightwothree", '8', '3', 83),
+                Arguments.of("abcone2threexyz", '1', '3', 13),
+                Arguments.of("xtwone3four", '2', '4', 24),
+                Arguments.of("4nineeightseven2", '4', '2', 42),
+                Arguments.of("zoneight234", '1', '4', 14),
+                Arguments.of("7pqrstsixteen", '7', '6', 76)
             )
     }
 
     @ParameterizedTest
     @MethodSource("extractArguments")
     @Suppress("UNUSED_PARAMETER")
-    fun testNormaliseData(data: String, normalData: String, firstDigit: Char, lastDigit: Char, value: Int) {
-        assertEquals(normalData, day01.normalise(data))
+    fun testExtractFirstDigit(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
+        assertEquals(firstDigit, day01.getFirstDigit(data))
     }
 
     @ParameterizedTest
     @MethodSource("extractArguments")
     @Suppress("UNUSED_PARAMETER")
-    fun testExtractFirstDigit(data: String, normalData: String, firstDigit: Char, lastDigit: Char, value: Int) {
-        assertEquals(firstDigit, day01.getFirstDigit(normalData))
+    fun testExtractLastDigit(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
+        assertEquals(lastDigit, day01.getLastDigit(data))
     }
 
     @ParameterizedTest
     @MethodSource("extractArguments")
     @Suppress("UNUSED_PARAMETER")
-    fun testExtractLastDigit(data: String, normalData: String, firstDigit: Char, lastDigit: Char, value: Int) {
-        assertEquals(lastDigit, day01.getLastDigit(normalData))
-    }
-
-    @ParameterizedTest
-    @MethodSource("extractArguments")
-    @Suppress("UNUSED_PARAMETER")
-    fun testExtractValue(data: String, normalData: String, firstDigit: Char, lastDigit: Char, value: Int) {
+    fun testExtractValue(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
         assertEquals(value, day01.getValue(data))
     }
 
