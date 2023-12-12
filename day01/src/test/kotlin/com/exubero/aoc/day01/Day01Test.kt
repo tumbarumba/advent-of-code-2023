@@ -32,4 +32,11 @@ class Day01Test {
     fun testExtractLastDigit(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
         assertEquals(lastDigit, day01.getLastDigit(data))
     }
+
+    @Test
+    fun loadInputData() {
+        val inputData = day01.loadInputData()
+        assertEquals("two934seven1", inputData.first())
+        assertEquals("fivebxsevensixone872dlx", inputData.last())
+    }
 }
