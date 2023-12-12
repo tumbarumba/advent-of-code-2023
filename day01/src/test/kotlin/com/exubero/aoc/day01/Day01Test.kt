@@ -23,24 +23,28 @@ class Day01Test {
 
     @ParameterizedTest
     @MethodSource("extractArguments")
+    @Suppress("UNUSED_PARAMETER")
     fun testNormaliseData(data: String, normalData: String, firstDigit: Char, lastDigit: Char, value: Int) {
         assertEquals(normalData, day01.normalise(data))
     }
 
     @ParameterizedTest
     @MethodSource("extractArguments")
+    @Suppress("UNUSED_PARAMETER")
     fun testExtractFirstDigit(data: String, normalData: String, firstDigit: Char, lastDigit: Char, value: Int) {
         assertEquals(firstDigit, day01.getFirstDigit(normalData))
     }
 
     @ParameterizedTest
     @MethodSource("extractArguments")
+    @Suppress("UNUSED_PARAMETER")
     fun testExtractLastDigit(data: String, normalData: String, firstDigit: Char, lastDigit: Char, value: Int) {
         assertEquals(lastDigit, day01.getLastDigit(normalData))
     }
 
     @ParameterizedTest
     @MethodSource("extractArguments")
+    @Suppress("UNUSED_PARAMETER")
     fun testExtractValue(data: String, normalData: String, firstDigit: Char, lastDigit: Char, value: Int) {
         assertEquals(value, day01.getValue(data))
     }
