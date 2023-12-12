@@ -33,6 +33,12 @@ class Day01Test {
         assertEquals(lastDigit, day01.getLastDigit(data))
     }
 
+    @ParameterizedTest
+    @MethodSource("extractArguments")
+    fun testExtractValue(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
+        assertEquals(value, day01.getValue(data))
+    }
+
     @Test
     fun loadInputData() {
         val inputData = day01.loadInputData()
