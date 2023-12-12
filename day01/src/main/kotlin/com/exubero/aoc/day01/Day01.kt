@@ -39,7 +39,7 @@ class Day01 {
     fun loadInputData(): List<String> {
         val inputStream = this::class.java.getResourceAsStream("/input.txt")
         inputStream.use {
-            return inputStream.bufferedReader()?.readLines().orEmpty()
+            return inputStream.bufferedReader().readLines().orEmpty()
         }
     }
 }
