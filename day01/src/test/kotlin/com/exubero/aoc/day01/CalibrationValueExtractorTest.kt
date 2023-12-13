@@ -36,26 +36,26 @@ class CalibrationValueExtractorTest {
     @ParameterizedTest
     @MethodSource("extractArguments")
     @Suppress("UNUSED_PARAMETER")
-    fun testExtractFirstDigit(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
-        assertEquals(firstDigit, extractor.getFirstDigit(data))
+    fun testFirstDigit(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
+        assertEquals(firstDigit, extractor.firstDigit(data))
     }
 
     @ParameterizedTest
     @MethodSource("extractArguments")
     @Suppress("UNUSED_PARAMETER")
-    fun testExtractLastDigit(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
-        assertEquals(lastDigit, extractor.getLastDigit(data))
+    fun testLastDigit(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
+        assertEquals(lastDigit, extractor.lastDigit(data))
     }
 
     @ParameterizedTest
     @MethodSource("extractArguments")
     @Suppress("UNUSED_PARAMETER")
-    fun testExtractValue(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
+    fun testCalibrationValue(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
         assertEquals(value, extractor.calibrationValueFor(data))
     }
 
     @Test
-    fun loadInputData() {
+    fun testLoadInputData() {
         val inputData = extractor.loadInputData()
         assertEquals("two934seven1", inputData.first())
         assertEquals("fivebxsevensixone872dlx", inputData.last())

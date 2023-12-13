@@ -39,11 +39,11 @@ class CalibrationValueExtractor {
         return null
     }
 
-    internal fun getFirstDigit(data: String): Char {
+    internal fun firstDigit(data: String): Char {
         return maybeDigit(data) ?: throw IllegalArgumentException("No digit in $data")
     }
 
-    internal fun getLastDigit(data: String): Char {
+    internal fun lastDigit(data: String): Char {
         for (i in data.length - 1 downTo 0) {
             val endOfData = data.substring(i, data.length)
             val digit = maybeDigit(endOfData)
@@ -55,8 +55,7 @@ class CalibrationValueExtractor {
     }
 
     fun calibrationValueFor(inputLine: String): Int {
-        val valueString = this.getFirstDigit(inputLine).toString() + this.getLastDigit(inputLine)
-        return valueString.toInt()
+        return "${firstDigit(inputLine)}${lastDigit(inputLine)}".toInt()
     }
 
     fun loadInputData(): List<String> {
