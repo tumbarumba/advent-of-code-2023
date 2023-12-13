@@ -2,12 +2,12 @@ package com.exubero.aoc.day01
 
 fun main() {
     println("Advent of Code: Day 01")
-    val day01 = Day01()
-    val total = day01.loadInputData().fold(0) {acc, next -> acc + day01.getValue(next)}
+    val extractor = CalibrationValueExtractor()
+    val total = extractor.loadInputData().fold(0) { acc, inputLine -> acc + extractor.calibrationValueFor(inputLine)}
     println("Calibration sum: $total")
 }
 
-class Day01 {
+class CalibrationValueExtractor {
     companion object {
         val digitMap = hashMapOf(
             "one" to '1',
@@ -39,11 +39,11 @@ class Day01 {
         return null
     }
 
-    fun getFirstDigit(data: String): Char {
+    internal fun getFirstDigit(data: String): Char {
         return maybeDigit(data) ?: throw IllegalArgumentException("No digit in $data")
     }
 
-    fun getLastDigit(data: String): Char {
+    internal fun getLastDigit(data: String): Char {
         for (i in data.length - 1 downTo 0) {
             val endOfData = data.substring(i, data.length)
             val digit = maybeDigit(endOfData)
@@ -54,8 +54,8 @@ class Day01 {
         throw IllegalArgumentException("No digit in $data")
     }
 
-    fun getValue(data: String): Int {
-        val valueString = this.getFirstDigit(data).toString() + this.getLastDigit(data)
+    fun calibrationValueFor(inputLine: String): Int {
+        val valueString = this.getFirstDigit(inputLine).toString() + this.getLastDigit(inputLine)
         return valueString.toInt()
     }
 

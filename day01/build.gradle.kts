@@ -6,5 +6,5 @@ dependencies {
 }
 
 application {
-    mainClass.set("com.exubero.aoc.day01.Day01Kt")
+    mainClass.set("com.exubero.aoc.day01.CalibrationValueExtractorKt")
 }

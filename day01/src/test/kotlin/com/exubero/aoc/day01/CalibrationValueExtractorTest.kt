@@ -8,8 +8,8 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
-class Day01Test {
-    private val day01 = Day01()
+class CalibrationValueExtractorTest {
+    private val extractor = CalibrationValueExtractor()
 
     companion object ExtractParameters {
         @JvmStatic
@@ -37,26 +37,26 @@ class Day01Test {
     @MethodSource("extractArguments")
     @Suppress("UNUSED_PARAMETER")
     fun testExtractFirstDigit(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
-        assertEquals(firstDigit, day01.getFirstDigit(data))
+        assertEquals(firstDigit, extractor.getFirstDigit(data))
     }
 
     @ParameterizedTest
     @MethodSource("extractArguments")
     @Suppress("UNUSED_PARAMETER")
     fun testExtractLastDigit(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
-        assertEquals(lastDigit, day01.getLastDigit(data))
+        assertEquals(lastDigit, extractor.getLastDigit(data))
     }
 
     @ParameterizedTest
     @MethodSource("extractArguments")
     @Suppress("UNUSED_PARAMETER")
     fun testExtractValue(data: String, firstDigit: Char, lastDigit: Char, value: Int) {
-        assertEquals(value, day01.getValue(data))
+        assertEquals(value, extractor.calibrationValueFor(data))
     }
 
     @Test
     fun loadInputData() {
-        val inputData = day01.loadInputData()
+        val inputData = extractor.loadInputData()
         assertEquals("two934seven1", inputData.first())
         assertEquals("fivebxsevensixone872dlx", inputData.last())
     }
