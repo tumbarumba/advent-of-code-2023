@@ -21,7 +21,15 @@ class Day01Test {
                 Arguments.of("xtwone3four", '2', '4', 24),
                 Arguments.of("4nineeightseven2", '4', '2', 42),
                 Arguments.of("zoneight234", '1', '4', 14),
-                Arguments.of("7pqrstsixteen", '7', '6', 76)
+                Arguments.of("7pqrstsixteen", '7', '6', 76),
+                Arguments.of("6bjztkxhsixkgnkroneightht", '6', '8', 68),
+                Arguments.of("oneight", '1', '8', 18),
+                Arguments.of("twone", '2', '1', 21),
+                Arguments.of("threeight", '3', '8', 38),
+                Arguments.of("fiveight", '5', '8', 58),
+                Arguments.of("sevenine", '7', '9', 79),
+                Arguments.of("eighthree", '8', '3', 83),
+                Arguments.of("nineight", '9', '8', 98)
             )
     }
 
