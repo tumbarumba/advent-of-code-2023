@@ -6,6 +6,10 @@ fun main() {
 }
 
 class Day02 {
+    companion object {
+        val lineRegex = """^Game (\d+):.*$""".toRegex()
+    }
+
     fun loadInputData(): List<String> {
         val inputStream = this::class.java.getResourceAsStream("/input.txt")
         if (inputStream != null) {
@@ -13,4 +17,12 @@ class Day02 {
         }
         throw Exception("No input text found")
     }
+
+    fun parseLine(line: String): Game {
+        val match = lineRegex.find(line) ?: throw IllegalArgumentException("Not a game line: $line")
+        val idStr = match.groups[1]!!.value
+        return Game(idStr.toInt())
+    }
 }
+
+data class Game(val id: Int)
