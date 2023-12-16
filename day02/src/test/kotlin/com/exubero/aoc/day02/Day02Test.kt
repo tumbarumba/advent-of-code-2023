@@ -17,16 +17,26 @@ class Day02Test {
     fun testParseLine() {
         val actual = day02.parseLine("Game 1: 9 red, 5 blue, 6 green; 6 red, 13 blue; 2 blue, 7 green, 5 red")
         val expected = Game(1, listOf(
-            GameSample(9, 6, 5),
-            GameSample(6, 0, 13),
-            GameSample(5, 7, 2)))
+            ColourSet(9, 6, 5),
+            ColourSet(6, 0, 13),
+            ColourSet(5, 7, 2)))
         assertEquals(expected, actual)
     }
 
     @Test
     fun testParseSample() {
-        assertEquals(GameSample(9, 6, 5), day02.parseSample("9 red, 5 blue, 6 green"))
-        assertEquals(GameSample(6, 0, 13), day02.parseSample("6 red, 13 blue"))
-        assertEquals(GameSample(5, 7, 2), day02.parseSample("2 blue, 7 green, 5 red"))
+        assertEquals(ColourSet(9, 6, 5), day02.parseSample("9 red, 5 blue, 6 green"))
+        assertEquals(ColourSet(6, 0, 13), day02.parseSample("6 red, 13 blue"))
+        assertEquals(ColourSet(5, 7, 2), day02.parseSample("2 blue, 7 green, 5 red"))
+    }
+
+    @Test
+    fun testIsSubset() {
+        val bag = ColourSet(2, 2, 2)
+        assertTrue(bag.isSubset(ColourSet(1, 1, 1)))
+        assertTrue(bag.isSubset(ColourSet(2, 2, 2)))
+        assertFalse(bag.isSubset(ColourSet(3, 2, 2)))
+        assertFalse(bag.isSubset(ColourSet(2, 3, 2)))
+        assertFalse(bag.isSubset(ColourSet(2, 2, 3)))
     }
 }
