@@ -15,7 +15,18 @@ class Day02Test {
 
     @Test
     fun testParseLine() {
-        val game = day02.parseLine("Game 1: 9 red, 5 blue, 6 green; 6 red, 13 blue; 2 blue, 7 green, 5 red")
-        assertEquals(Game(1), game)
+        val actual = day02.parseLine("Game 1: 9 red, 5 blue, 6 green; 6 red, 13 blue; 2 blue, 7 green, 5 red")
+        val expected = Game(1, listOf(
+            GameSample(9, 6, 5),
+            GameSample(6, 0, 13),
+            GameSample(5, 7, 2)))
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testParseSample() {
+        assertEquals(GameSample(9, 6, 5), day02.parseSample("9 red, 5 blue, 6 green"))
+        assertEquals(GameSample(6, 0, 13), day02.parseSample("6 red, 13 blue"))
+        assertEquals(GameSample(5, 7, 2), day02.parseSample("2 blue, 7 green, 5 red"))
     }
 }
