@@ -60,4 +60,11 @@ data class Game(val id: Int, val samples: List<ColourSet>) {
     fun isPossibleFrom(bag: ColourSet): Boolean {
         return samples.all { bag.isSubset(it) }
     }
+
+    fun smallestBag(): ColourSet {
+        val maxRed = samples.maxOf { it.red }
+        val maxGreen = samples.maxOf { it.green }
+        val maxBlue = samples.maxOf { it.blue }
+        return ColourSet(maxRed, maxGreen, maxBlue)
+    }
 }

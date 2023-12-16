@@ -58,4 +58,21 @@ class Day02Test {
         ))
         assertFalse(game3.isPossibleFrom(bag))
     }
+
+    @Test
+    fun testSmallestBag() {
+        val game1 = Game(1, listOf(
+            ColourSet(4, 0, 3),
+            ColourSet(1, 2, 6),
+            ColourSet(0, 2, 0)
+        ))
+        assertEquals(ColourSet(4, 2, 6), game1.smallestBag())
+
+        val game3 = Game(3, listOf(
+            ColourSet(20, 8, 6),
+            ColourSet(5, 13, 5),
+            ColourSet(1, 5, 0)
+        ))
+        assertEquals(ColourSet(20, 13, 6), game3.smallestBag())
+    }
 }
