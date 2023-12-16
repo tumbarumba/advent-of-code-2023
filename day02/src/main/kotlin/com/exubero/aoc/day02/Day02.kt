@@ -6,10 +6,9 @@ fun main() {
     val bag = ColourSet(12, 13, 14)
     val sumOfIds = day02.loadInputData()
         .map { day02.parseLine(it) }
-        .filter { it.isPossible(bag) }
-        .map { it.id }
-        .sum()
-    println("Sum of possible games: $sumOfIds")
+        .filter { it.isPossibleFrom(bag) }
+        .sumOf { it.id }
+    println("Sum of possible game ids: $sumOfIds")
 }
 
 class Day02 {
@@ -58,7 +57,7 @@ data class ColourSet(val red: Int, val green: Int, val blue: Int) {
 }
 
 data class Game(val id: Int, val samples: List<ColourSet>) {
-    fun isPossible(bag: ColourSet): Boolean {
+    fun isPossibleFrom(bag: ColourSet): Boolean {
         return samples.all { bag.isSubset(it) }
     }
 }

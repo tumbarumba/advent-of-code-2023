@@ -49,13 +49,13 @@ class Day02Test {
             ColourSet(1, 2, 6),
             ColourSet(0, 2, 0)
         ))
-        assertTrue(game1.isPossible(bag))
+        assertTrue(game1.isPossibleFrom(bag))
 
         val game3 = Game(3, listOf(
             ColourSet(20, 8, 6),
             ColourSet(5, 13, 5),
             ColourSet(1, 5, 0)
         ))
-        assertFalse(game3.isPossible(bag))
+        assertFalse(game3.isPossibleFrom(bag))
     }
 }
