@@ -3,7 +3,13 @@ package com.exubero.aoc.day02
 fun main() {
     println("Advent of Code: Day 02")
     val day02 = Day02()
-    day02.loadInputData()
+    val bag = ColourSet(12, 13, 14)
+    val sumOfIds = day02.loadInputData()
+        .map { day02.parseLine(it) }
+        .filter { it.isPossible(bag) }
+        .map { it.id }
+        .sum()
+    println("Sum of possible games: $sumOfIds")
 }
 
 class Day02 {
@@ -51,4 +57,8 @@ data class ColourSet(val red: Int, val green: Int, val blue: Int) {
     }
 }
 
-data class Game(val id: Int, val samples: List<ColourSet>)
+data class Game(val id: Int, val samples: List<ColourSet>) {
+    fun isPossible(bag: ColourSet): Boolean {
+        return samples.all { bag.isSubset(it) }
+    }
+}

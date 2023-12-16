@@ -39,4 +39,23 @@ class Day02Test {
         assertFalse(bag.isSubset(ColourSet(2, 3, 2)))
         assertFalse(bag.isSubset(ColourSet(2, 2, 3)))
     }
+
+    @Test
+    fun testIsPossible() {
+        val bag = ColourSet(12, 13, 14)
+
+        val game1 = Game(1, listOf(
+            ColourSet(4, 0, 3),
+            ColourSet(1, 2, 6),
+            ColourSet(0, 2, 0)
+        ))
+        assertTrue(game1.isPossible(bag))
+
+        val game3 = Game(3, listOf(
+            ColourSet(20, 8, 6),
+            ColourSet(5, 13, 5),
+            ColourSet(1, 5, 0)
+        ))
+        assertFalse(game3.isPossible(bag))
+    }
 }
