@@ -3,12 +3,16 @@ package com.exubero.aoc.day02
 fun main() {
     println("Advent of Code: Day 02")
     val day02 = Day02()
+    val games = day02.loadInputData().map { day02.parseLine(it) }
+
     val bag = ColourSet(12, 13, 14)
-    val sumOfIds = day02.loadInputData()
-        .map { day02.parseLine(it) }
+    val sumOfIds = games
         .filter { it.isPossibleFrom(bag) }
         .sumOf { it.id }
     println("Sum of possible game ids: $sumOfIds")
+
+    val sumOfPowers = games.sumOf { it.smallestBag().power() }
+    println("Sum of powers of smallest games: $sumOfPowers")
 }
 
 class Day02 {
@@ -53,6 +57,10 @@ data class ColourCount(val colour: String, val count: Int)
 data class ColourSet(val red: Int, val green: Int, val blue: Int) {
     fun isSubset(sample: ColourSet): Boolean {
         return sample.red <= red && sample.green <= green && sample.blue <= blue
+    }
+
+    fun power(): Int {
+        return red * green * blue
     }
 }
 

@@ -75,4 +75,10 @@ class Day02Test {
         ))
         assertEquals(ColourSet(20, 13, 6), game3.smallestBag())
     }
+
+    @Test
+    fun testPower() {
+        assertEquals(48, ColourSet(4, 2, 6).power())
+        assertEquals(1560, ColourSet(20, 13, 6).power())
+    }
 }
