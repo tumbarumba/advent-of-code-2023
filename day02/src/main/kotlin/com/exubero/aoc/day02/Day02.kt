@@ -2,8 +2,8 @@ package com.exubero.aoc.day02
 
 fun main() {
     println("Advent of Code: Day 02")
-    val day02 = Day02()
-    val games = day02.loadInputData().map { day02.parseLine(it) }
+    val gameBuilder = GameBuilder()
+    val games = Day02.loadInputData().map { gameBuilder.parseLine(it) }
 
     val bag = ColourSet(12, 13, 14)
     val sumOfIds = games
@@ -17,16 +17,20 @@ fun main() {
 
 class Day02 {
     companion object {
+        fun loadInputData(): List<String> {
+            val inputStream = this::class.java.getResourceAsStream("/input.txt")
+            if (inputStream != null) {
+                return inputStream.bufferedReader().readLines()
+            }
+            throw Exception("No input text found")
+        }
+    }
+}
+
+class GameBuilder {
+    companion object {
         val gameRegex = """^Game (\d+): (.*)$""".toRegex()
         val colourRegex = """^\s*(\d+) (red|green|blue)$""".toRegex()
-    }
-
-    fun loadInputData(): List<String> {
-        val inputStream = this::class.java.getResourceAsStream("/input.txt")
-        if (inputStream != null) {
-            return inputStream.bufferedReader().readLines()
-        }
-        throw Exception("No input text found")
     }
 
     fun parseLine(line: String): Game {
@@ -70,9 +74,10 @@ data class Game(val id: Int, val samples: List<ColourSet>) {
     }
 
     fun smallestBag(): ColourSet {
-        val maxRed = samples.maxOf { it.red }
-        val maxGreen = samples.maxOf { it.green }
-        val maxBlue = samples.maxOf { it.blue }
-        return ColourSet(maxRed, maxGreen, maxBlue)
+        return ColourSet(
+            samples.maxOf { it.red },
+            samples.maxOf { it.green },
+            samples.maxOf { it.blue }
+        )
     }
 }
