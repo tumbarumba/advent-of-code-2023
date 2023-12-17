@@ -5,7 +5,8 @@ fun main() {
     val inputData = Day03.loadInputData()
     val parser = SchematicParser()
     val schematic = parser.makeSchematic(inputData)
-    println(schematic)
+    val sumOfPartNumbers = schematic.partNumbers().sum()
+    println("Sum of part numbers: $sumOfPartNumbers")
 }
 
 class Day03 {
@@ -54,8 +55,34 @@ class SchematicParser {
 
 data class Point(val x: Int, val y: Int)
 
-data class SchematicNumber(val number: Int, val start: Point, val length: Int)
+data class Box(val topLeft: Point, val bottomRight: Point) {
+    fun contains(point: Point): Boolean {
+        return point.x >= topLeft.x &&
+                point.y >= topLeft.y &&
+                point.x <= bottomRight.x &&
+                point.y <= bottomRight.y
+    }
+}
+
+data class SchematicNumber(val number: Int, val start: Point, val length: Int) {
+    fun adjacentBox(): Box {
+        return Box(
+            Point(start.x - 1, start.y - 1),
+            Point(start.x + length, start.y + 1)
+        )
+    }
+}
 
 data class SchematicPart(val symbol: Char, val location: Point)
 
-data class Schematic(val parts: List<SchematicPart>, val numbers: List<SchematicNumber>)
+data class Schematic(val parts: List<SchematicPart>, val numbers: List<SchematicNumber>) {
+    fun isPartNumber(number: SchematicNumber): Boolean {
+        return parts.any() { number.adjacentBox().contains(it.location) }
+    }
+
+    fun partNumbers(): List<Int> {
+        return numbers
+            .filter { isPartNumber(it) }
+            .map { it.number }
+    }
+}
