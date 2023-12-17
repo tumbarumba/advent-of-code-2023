@@ -81,4 +81,18 @@ class Day03Test {
     fun testSchematicPartNumbers() {
         assertEquals(listOf(467, 35, 633, 617, 592, 755, 664, 598), schematic.partNumbers())
     }
+
+    @Test
+    fun testNumbersForPart() {
+        assertEquals(listOf(467, 35), schematic.partNumbersFor(SchematicPart('*', Point(4, 2))))
+    }
+
+    @Test
+    fun testGears() {
+        val expected = listOf(
+            Gear(Point(4, 2), 16345),
+            Gear(Point(6, 9), 451490)
+        )
+        assertEquals(expected, schematic.gears())
+    }
 }

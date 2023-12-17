@@ -5,8 +5,12 @@ fun main() {
     val inputData = Day03.loadInputData()
     val parser = SchematicParser()
     val schematic = parser.makeSchematic(inputData)
+
     val sumOfPartNumbers = schematic.partNumbers().sum()
     println("Sum of part numbers: $sumOfPartNumbers")
+
+    val sumOfGearRatios = schematic.gears().sumOf { it.ratio }
+    println("Sum of gear ratios: $sumOfGearRatios")
 }
 
 class Day03 {
@@ -75,6 +79,8 @@ data class SchematicNumber(val number: Int, val start: Point, val length: Int) {
 
 data class SchematicPart(val symbol: Char, val location: Point)
 
+data class Gear(val location: Point, val ratio: Int)
+
 data class Schematic(val parts: List<SchematicPart>, val numbers: List<SchematicNumber>) {
     fun isPartNumber(number: SchematicNumber): Boolean {
         return parts.any() { number.adjacentBox().contains(it.location) }
@@ -84,5 +90,31 @@ data class Schematic(val parts: List<SchematicPart>, val numbers: List<Schematic
         return numbers
             .filter { isPartNumber(it) }
             .map { it.number }
+    }
+
+    fun partNumbersFor(part: SchematicPart): List<Int> {
+        return numbers
+            .filter { it.adjacentBox().contains(part.location) }
+            .map { it.number }
+    }
+
+    fun gears(): List<Gear> {
+        return parts
+            .filter { isGear(it) }
+            .map { makeGear(it) }
+    }
+
+    private fun isGear(part: SchematicPart): Boolean {
+        if (part.symbol != '*') {
+            return false
+        }
+        val partNumbers = partNumbersFor(part)
+        return partNumbers.size == 2
+    }
+
+    private fun makeGear(part: SchematicPart): Gear {
+        val numbers = partNumbersFor(part)
+        val ratio = numbers[0] * numbers[1]
+        return Gear(part.location, ratio)
     }
 }
