@@ -1,8 +1,13 @@
 package com.exubero.aoc.day04
 
+import kotlin.math.pow
+
 fun main() {
     println("Advent of Code: Day 04")
-    Day04.loadInputData()
+    val parser = ScratchCardParser()
+    val cards = Day04.loadInputData().map { parser.parseLine(it) }
+    val sumOfPoints = cards.sumOf { it.points() }
+    println("Sum of scratchcard points: $sumOfPoints")
 }
 
 class Day04 {
@@ -19,7 +24,7 @@ class Day04 {
 
 class ScratchCardParser {
     companion object {
-        val scratchCardRegex = """^Card (\d+):(.*)\|(.*)$""".toRegex()
+        val scratchCardRegex = """^Card\s+(\d+):(.*)\|(.*)$""".toRegex()
     }
 
     private fun parseNumbers(numbersText: String): Set<Int> {
@@ -44,6 +49,10 @@ data class ScratchCard(val id: Int, val winningNumbers: Set<Int>, val selectedNu
     }
 
     fun points(): Int {
-        return 
+        val winningCount = selectedWinning().size
+        if (winningCount == 0) {
+            return 0
+        }
+        return 2.0.pow(winningCount - 1).toInt()
     }
 }
