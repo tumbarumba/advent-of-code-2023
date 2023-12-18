@@ -16,3 +16,26 @@ class Day04 {
         }
     }
 }
+
+class ScratchCardParser {
+    companion object {
+        val scratchCardRegex = """^Card (\d+):(.*)\|(.*)$""".toRegex()
+    }
+
+    private fun parseNumbers(numbersText: String): Set<Int> {
+        return numbersText.split("""\s+""".toRegex())
+            .filter { it.isNotEmpty() }
+            .map { it.toInt() }
+            .toSet()
+    }
+
+    fun parseLine(line: String): ScratchCard {
+        val match = scratchCardRegex.find(line) ?: throw IllegalArgumentException("Not a scratchcard: $line")
+        val id = match.groups[1]!!.value.toInt()
+        val winning = parseNumbers(match.groups[2]!!.value)
+        val selected = parseNumbers(match.groups[3]!!.value)
+        return ScratchCard(id, winning, selected)
+    }
+}
+
+data class ScratchCard(val id: Int, val winningNumbers: Set<Int>, val selectedNumbers: Set<Int>)
