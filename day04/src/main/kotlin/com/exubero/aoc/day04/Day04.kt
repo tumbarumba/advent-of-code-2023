@@ -38,4 +38,12 @@ class ScratchCardParser {
     }
 }
 
-data class ScratchCard(val id: Int, val winningNumbers: Set<Int>, val selectedNumbers: Set<Int>)
+data class ScratchCard(val id: Int, val winningNumbers: Set<Int>, val selectedNumbers: Set<Int>) {
+    fun selectedWinning(): Set<Int> {
+        return winningNumbers intersect selectedNumbers
+    }
+
+    fun points(): Int {
+        return 
+    }
+}
