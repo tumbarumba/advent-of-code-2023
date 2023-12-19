@@ -28,7 +28,8 @@ class Day05Test {
 
     @Test
     fun testParseSeeds() {
-        assertEquals(listOf(1L, 100L, 201L), parser.parseSeeds("1 100 201"))
+        val expectedSeedRanges = listOf(LongRange(79L, 92L), LongRange(55L, 67L))
+        assertEquals(expectedSeedRanges, parser.parseSeeds("79 14 55 13"))
     }
 
     @ParameterizedTest

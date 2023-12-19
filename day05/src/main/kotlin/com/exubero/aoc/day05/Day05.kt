@@ -13,7 +13,8 @@ fun main() {
     val temperatureToHumidityLookup = parser.parseLookupData(Day05.loadTemperatureToHumidityData())
     val humidityToLocationLookup = parser.parseLookupData(Day05.loadHumidityToLocationData())
 
-    val smallestLocation = seeds
+    val smallestLocation = seeds.asSequence()
+        .flatten()
         .map { seedToSoilLookup.destinationFor(it) }
         .map { soilToFertilizerLookup.destinationFor(it) }
         .map { fertilizerToWaterLookup.destinationFor(it) }
@@ -51,8 +52,15 @@ class Day05DataParser {
         val mapDataRegex = """^(\d+) (\d+) (\d+)$""".toRegex()
     }
 
-    fun parseSeeds(seedData: String): List<Long> {
-        return seedData.split(" ").map { it.toLong() }
+    fun parseSeeds(seedData: String): List<LongRange> {
+        val values = seedData.split(" ").map { it.toLong() }
+        val ranges = mutableListOf<LongRange>()
+        for (i in values.indices step 2) {
+            val start = values[i]
+            val end = start + values[i+1] - 1
+            ranges.add(LongRange(start, end))
+        }
+        return ranges
     }
 
     fun parseMapDataLine(line: String): MapRange {
