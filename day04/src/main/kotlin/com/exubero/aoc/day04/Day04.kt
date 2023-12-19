@@ -6,8 +6,13 @@ fun main() {
     println("Advent of Code: Day 04")
     val parser = ScratchCardParser()
     val cards = Day04.loadInputData().map { parser.parseLine(it) }
+
     val sumOfPoints = cards.sumOf { it.points() }
     println("Sum of scratchcard points: $sumOfPoints")
+
+    val processor = ScratchCardProcessor()
+    val processedCards = processor.processCards(cards)
+    println("Final number of scratchcards: ${processedCards.size}")
 }
 
 class Day04 {
@@ -43,16 +48,36 @@ class ScratchCardParser {
     }
 }
 
-data class ScratchCard(val id: Int, val winningNumbers: Set<Int>, val selectedNumbers: Set<Int>) {
-    fun selectedWinning(): Set<Int> {
-        return winningNumbers intersect selectedNumbers
+data class ScratchCard(val number: Int, val winningNumbers: Set<Int>, val selectedNumbers: Set<Int>) {
+    fun selectedWinning() = winningNumbers intersect selectedNumbers
+
+    fun winningCount(): Int {
+        return selectedWinning().size
     }
 
     fun points(): Int {
-        val winningCount = selectedWinning().size
-        if (winningCount == 0) {
+        if (winningCount() == 0) {
             return 0
         }
-        return 2.0.pow(winningCount - 1).toInt()
+        return 2.0.pow(winningCount() - 1).toInt()
     }
+}
+
+class ScratchCardProcessor {
+    fun processCards(originalCards: List<ScratchCard>): List<ScratchCard> {
+        val cardMap = originalCards.map { it.number to mutableListOf(it) }.toMap()
+        for (cardNumber in  cardMap.keys.sorted()) {
+            for (card in cardMap[cardNumber]!!) {
+                for (i in 1..card.winningCount()) {
+                    val copies = cardMap[cardNumber + i]
+                    if (copies != null) {
+                        val cardToCopy = copies.first()
+                        copies.add(cardToCopy.copy())
+                    }
+                }
+            }
+        }
+        return cardMap.keys.sorted().flatMap { cardMap[it]!! }
+    }
+
 }
