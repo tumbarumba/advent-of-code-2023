@@ -28,13 +28,13 @@ class Day05Test {
 
     @Test
     fun testParseSeeds() {
-        assertEquals(listOf(1, 100, 201), parser.parseSeeds("1 100 201"))
+        assertEquals(listOf(1L, 100L, 201L), parser.parseSeeds("1 100 201"))
     }
 
     @ParameterizedTest
     @MethodSource("expectedSeedToSoil")
-    fun testParseSeedToSoil(seed: SeedNumber, soil: SoilType) {
-        val lookup = parser.parseSeedToSoilData(seedToSoilData)
-        assertEquals(soil, lookup.soilFor(seed))
+    fun testParseSeedToSoil(seed: Long, expectedSoil: Long) {
+        val lookup = parser.parseLookupData(seedToSoilData)
+        assertEquals(expectedSoil, lookup.destinationFor(seed))
     }
 }

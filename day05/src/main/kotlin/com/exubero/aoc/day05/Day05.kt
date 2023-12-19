@@ -2,6 +2,27 @@ package com.exubero.aoc.day05
 
 fun main() {
     println("Advent of Code: Day 05")
+
+    val parser = Day05DataParser()
+    val seeds = parser.parseSeeds(Day05.loadSeedsData())
+    val seedToSoilLookup = parser.parseLookupData(Day05.loadSeedToSoilData())
+    val soilToFertilizerLookup = parser.parseLookupData(Day05.loadSoilToFertilizerData())
+    val fertilizerToWaterLookup = parser.parseLookupData(Day05.loadFertilizerToWaterData())
+    val waterToLightLookup = parser.parseLookupData(Day05.loadWaterToLightData())
+    val lightToTemperatureLookup = parser.parseLookupData(Day05.loadLightToTemperatureData())
+    val temperatureToHumidityLookup = parser.parseLookupData(Day05.loadTemperatureToHumidityData())
+    val humidityToLocationLookup = parser.parseLookupData(Day05.loadHumidityToLocationData())
+
+    val smallestLocation = seeds
+        .map { seedToSoilLookup.destinationFor(it) }
+        .map { soilToFertilizerLookup.destinationFor(it) }
+        .map { fertilizerToWaterLookup.destinationFor(it) }
+        .map { waterToLightLookup.destinationFor(it) }
+        .map { lightToTemperatureLookup.destinationFor(it) }
+        .map { temperatureToHumidityLookup.destinationFor(it) }
+        .map { humidityToLocationLookup.destinationFor(it) }
+        .min()
+    println("Smallest location: $smallestLocation")
 }
 
 class Day05 {
@@ -14,7 +35,7 @@ class Day05 {
             throw Exception("No input text found")
         }
 
-        fun loadSeedsData()                 = loadInputData("/seeds.txt")
+        fun loadSeedsData()                 = loadInputData("/seeds.txt").first()
         fun loadSeedToSoilData()            = loadInputData("/seed-to-soil.txt")
         fun loadSoilToFertilizerData()      = loadInputData("/soil-to-fertilizer.txt")
         fun loadFertilizerToWaterData()     = loadInputData("/fertilizer-to-water.txt")
@@ -25,46 +46,43 @@ class Day05 {
     }
 }
 
-typealias SeedNumber = Int
-typealias SoilType = Int
-
 class Day05DataParser {
     companion object {
         val mapDataRegex = """^(\d+) (\d+) (\d+)$""".toRegex()
     }
 
-    fun parseSeeds(seedData: String): List<SeedNumber> {
-        return seedData.split(" ").map { it.toInt() }
+    fun parseSeeds(seedData: String): List<Long> {
+        return seedData.split(" ").map { it.toLong() }
     }
 
     fun parseMapDataLine(line: String): MapRange {
         val match = mapDataRegex.find(line) ?: throw IllegalArgumentException("Not valid map data: $line")
-        val destination = match.groups[1]!!.value.toInt()
-        val source      = match.groups[2]!!.value.toInt()
-        val length      = match.groups[3]!!.value.toInt()
+        val destination = match.groups[1]!!.value.toLong()
+        val source      = match.groups[2]!!.value.toLong()
+        val length      = match.groups[3]!!.value.toLong()
         return MapRange(destination, source, length)
     }
 
-    fun parseSeedToSoilData(seedToSoilData: List<String>): SeedToSoilLookup {
+    fun parseLookupData(seedToSoilData: List<String>): MapLookup {
         val mapRanges = seedToSoilData.map { parseMapDataLine(it) }
-        return SeedToSoilLookup(mapRanges)
+        return MapLookup(mapRanges)
     }
 
 }
 
-class MapRange(val destinationStart: Int, val sourceStart: Int, val rangeLength: Int) {
-    fun contains(source: Int): Boolean {
+class MapRange(val destinationStart: Long, val sourceStart: Long, val rangeLength: Long) {
+    fun contains(source: Long): Boolean {
         return (source >= sourceStart) && (source < sourceStart + rangeLength)
     }
 
-    fun lookup(source: Int): Int {
+    fun convert(source: Long): Long {
         val offset = source - sourceStart
         return destinationStart + offset
     }
 }
 
-class SeedToSoilLookup(val mapRanges: List<MapRange>) {
-    fun soilFor(source: SeedNumber): SoilType {
-        return mapRanges.find { it.contains(source) }?.lookup(source) ?: source
+class MapLookup(val mapRanges: List<MapRange>) {
+    fun destinationFor(source: Long): Long {
+        return mapRanges.find { it.contains(source) }?.convert(source) ?: source
     }
 }
