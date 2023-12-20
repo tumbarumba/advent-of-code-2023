@@ -15,14 +15,9 @@ class Day05Test {
 
         @JvmStatic
         fun expectedSeedToSoil(): Stream<Arguments> = Stream.of(
-            Arguments.of(0, 0),
-            Arguments.of(1, 1),
-            Arguments.of(49, 49),
-            Arguments.of(50, 52),
-            Arguments.of(51, 53),
-            Arguments.of(97, 99),
-            Arguments.of(98, 50),
-            Arguments.of(99, 51)
+            Arguments.of(LongRange(0, 1), listOf(LongRange(0, 1))),
+            Arguments.of(LongRange(49, 51), listOf(LongRange(49, 49), LongRange(52, 53))),
+            Arguments.of(LongRange(97, 100), listOf(LongRange(97, 99), LongRange(50, 51), LongRange(100, 100)))
         )
     }
 
@@ -32,10 +27,36 @@ class Day05Test {
         assertEquals(expectedSeedRanges, parser.parseSeeds("79 14 55 13"))
     }
 
+    @Test
+    fun testMapRangeIntersectsSource() {
+        val mapRange = MapRange(500, 100, 10)
+        val fullyInsideRange = LongRange(101, 105)
+        val partialLeftRange = LongRange(99, 105)
+        val partialRightRange = LongRange(105, 115)
+        val surroundingRange = LongRange(99, 115)
+        val outsideLeftRange = LongRange(20, 22)
+        val outsideRightRange = LongRange(150, 155)
+
+        assertTrue(mapRange.intersectsSource(fullyInsideRange))
+        assertTrue(mapRange.intersectsSource(partialLeftRange))
+        assertTrue(mapRange.intersectsSource(partialRightRange))
+        assertTrue(mapRange.intersectsSource(surroundingRange))
+        assertFalse(mapRange.intersectsSource(outsideLeftRange))
+        assertFalse(mapRange.intersectsSource(outsideRightRange))
+    }
+
+    @Test
+    fun testMapRangeConvert() {
+        val mapRange = MapRange(50, 98, 2)
+        val sourceRange = LongRange(97, 100)
+        val expected = listOf(LongRange(97, 97), LongRange(50, 52))
+        assertEquals(expected, mapRange.convert(sourceRange))
+    }
+
     @ParameterizedTest
     @MethodSource("expectedSeedToSoil")
-    fun testParseSeedToSoil(seed: Long, expectedSoil: Long) {
+    fun testParseSeedToSoil(seedRange: LongRange, expectedSoilRanges: List<LongRange>) {
         val lookup = parser.parseLookupData(seedToSoilData)
-        assertEquals(expectedSoil, lookup.destinationFor(seed))
+        assertEquals(expectedSoilRanges, lookup.destinationFor(seedRange))
     }
 }

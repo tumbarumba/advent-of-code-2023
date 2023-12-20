@@ -14,14 +14,14 @@ fun main() {
     val humidityToLocationLookup = parser.parseLookupData(Day05.loadHumidityToLocationData())
 
     val smallestLocation = seeds.asSequence()
+        .flatMap { seedToSoilLookup.destinationFor(it) }
+        .flatMap { soilToFertilizerLookup.destinationFor(it) }
+        .flatMap { fertilizerToWaterLookup.destinationFor(it) }
+        .flatMap { waterToLightLookup.destinationFor(it) }
+        .flatMap { lightToTemperatureLookup.destinationFor(it) }
+        .flatMap { temperatureToHumidityLookup.destinationFor(it) }
+        .flatMap { humidityToLocationLookup.destinationFor(it) }
         .flatten()
-        .map { seedToSoilLookup.destinationFor(it) }
-        .map { soilToFertilizerLookup.destinationFor(it) }
-        .map { fertilizerToWaterLookup.destinationFor(it) }
-        .map { waterToLightLookup.destinationFor(it) }
-        .map { lightToTemperatureLookup.destinationFor(it) }
-        .map { temperatureToHumidityLookup.destinationFor(it) }
-        .map { humidityToLocationLookup.destinationFor(it) }
         .min()
     println("Smallest location: $smallestLocation")
 }
@@ -78,19 +78,41 @@ class Day05DataParser {
 
 }
 
-class MapRange(val destinationStart: Long, val sourceStart: Long, val rangeLength: Long) {
-    fun contains(source: Long): Boolean {
-        return (source >= sourceStart) && (source < sourceStart + rangeLength)
+class MapRange(val destinationStart: Long, val sourceStart: Long, rangeLength: Long) {
+    private val thisSourceRange = LongRange(sourceStart, sourceStart + rangeLength - 1)
+
+    fun intersectsSource(otherSourceRange: LongRange): Boolean {
+        return thisSourceRange.contains(otherSourceRange.first) ||
+                thisSourceRange.contains(otherSourceRange.last) ||
+                otherSourceRange.
     }
 
-    fun convert(source: Long): Long {
-        val offset = source - sourceStart
-        return destinationStart + offset
+    fun convert(otherSourceRange: LongRange): List<LongRange> {
+        if (isFullyContained(otherSourceRange)) {
+            return listOf(toDestination(otherSourceRange))
+        }
+        if (otherSourceRange.first < thisSourceRange.first) {
+            val unmapped = LongRange(otherSourceRange.first, thisSourceRange.first - 1)
+            val mappedSize = otherSourceRange.last - thisSourceRange.first
+            val mapped = LongRange(destinationStart, destinationStart + mappedSize)
+        }
+        return listOf(otherSourceRange)
     }
+
+    private fun toDestination(otherSourceRange: LongRange): LongRange {
+        val startOffset = otherSourceRange.first - thisSourceRange.first
+        val start = destinationStart + startOffset
+        val end = start + otherSourceRange.last - otherSourceRange.first
+        return LongRange(start, end)
+    }
+
+    private fun isFullyContained(otherSourceRange: LongRange) =
+        thisSourceRange.contains(otherSourceRange.first) && thisSourceRange.contains(otherSourceRange.last)
 }
 
 class MapLookup(val mapRanges: List<MapRange>) {
-    fun destinationFor(source: Long): Long {
-        return mapRanges.find { it.contains(source) }?.convert(source) ?: source
+    fun destinationFor(sourceRange: LongRange): List<LongRange> {
+//        return mapRanges.find { it.contains(source) }?.convert(source) ?: source
+        return listOf(sourceRange)
     }
 }
