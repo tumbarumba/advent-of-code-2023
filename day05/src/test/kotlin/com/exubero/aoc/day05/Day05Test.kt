@@ -12,13 +12,20 @@ class Day05Test {
 
     companion object {
         val seedToSoilData = listOf("50 98 2", "52 50 48")
+        val seedToSoilLookup = Day05DataParser().parseLookupData(seedToSoilData)
 
         @JvmStatic
         fun expectedSeedToSoil(): Stream<Arguments> = Stream.of(
             Arguments.of(LongRange(0, 1), listOf(LongRange(0, 1))),
             Arguments.of(LongRange(49, 51), listOf(LongRange(49, 49), LongRange(52, 53))),
-            Arguments.of(LongRange(97, 100), listOf(LongRange(97, 99), LongRange(50, 51), LongRange(100, 100)))
+            Arguments.of(LongRange(97, 100), listOf(LongRange(97, 97), LongRange(100, 100), LongRange(50, 51)))
         )
+    }
+
+    @ParameterizedTest
+    @MethodSource("expectedSeedToSoil")
+    fun testMapLookup(seedRange: LongRange, expectedSoilRanges: List<LongRange>) {
+        assertEquals(expectedSoilRanges, seedToSoilLookup.destinationsFor(seedRange))
     }
 
     @Test
@@ -47,16 +54,24 @@ class Day05Test {
 
     @Test
     fun testMapRangeConvert() {
-        val mapRange = MapRange(50, 98, 2)
-        val sourceRange = LongRange(97, 100)
-        val expected = listOf(LongRange(97, 97), LongRange(50, 52))
-        assertEquals(expected, mapRange.convert(sourceRange))
-    }
+        val mapRange = MapRange(500, 100, 10)
 
-    @ParameterizedTest
-    @MethodSource("expectedSeedToSoil")
-    fun testParseSeedToSoil(seedRange: LongRange, expectedSoilRanges: List<LongRange>) {
-        val lookup = parser.parseLookupData(seedToSoilData)
-        assertEquals(expectedSoilRanges, lookup.destinationFor(seedRange))
+        val fullyInsideRange = 101L..105L
+        assertEquals(listOf(501L..505L), mapRange.convert(fullyInsideRange))
+
+        val partialLeftRange = 99L..105L
+        assertEquals(listOf(99L..99L, 500L..505L), mapRange.convert(partialLeftRange))
+
+        val partialRightRange = 105L..115L
+        assertEquals(listOf(505L..509L, 110L..115L), mapRange.convert(partialRightRange))
+
+        val surroundingRange = 99L..115L
+        assertEquals(listOf(99L..99L, 110L..115L, 500L..509L), mapRange.convert(surroundingRange))
+
+        val outsideLeftRange = 20L..22L
+        assertEquals(listOf(20L..22L), mapRange.convert(outsideLeftRange))
+
+        val outsideRightRange = 150L..155L
+        assertEquals(listOf(150L..155L), mapRange.convert(outsideRightRange))
     }
 }

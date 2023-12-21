@@ -14,13 +14,13 @@ fun main() {
     val humidityToLocationLookup = parser.parseLookupData(Day05.loadHumidityToLocationData())
 
     val smallestLocation = seeds.asSequence()
-        .flatMap { seedToSoilLookup.destinationFor(it) }
-        .flatMap { soilToFertilizerLookup.destinationFor(it) }
-        .flatMap { fertilizerToWaterLookup.destinationFor(it) }
-        .flatMap { waterToLightLookup.destinationFor(it) }
-        .flatMap { lightToTemperatureLookup.destinationFor(it) }
-        .flatMap { temperatureToHumidityLookup.destinationFor(it) }
-        .flatMap { humidityToLocationLookup.destinationFor(it) }
+        .flatMap { seedToSoilLookup.destinationsFor(it) }
+        .flatMap { soilToFertilizerLookup.destinationsFor(it) }
+        .flatMap { fertilizerToWaterLookup.destinationsFor(it) }
+        .flatMap { waterToLightLookup.destinationsFor(it) }
+        .flatMap { lightToTemperatureLookup.destinationsFor(it) }
+        .flatMap { temperatureToHumidityLookup.destinationsFor(it) }
+        .flatMap { humidityToLocationLookup.destinationsFor(it) }
         .flatten()
         .min()
     println("Smallest location: $smallestLocation")
@@ -53,14 +53,15 @@ class Day05DataParser {
     }
 
     fun parseSeeds(seedData: String): List<LongRange> {
-        val values = seedData.split(" ").map { it.toLong() }
-        val ranges = mutableListOf<LongRange>()
-        for (i in values.indices step 2) {
-            val start = values[i]
-            val end = start + values[i+1] - 1
-            ranges.add(LongRange(start, end))
-        }
-        return ranges
+        return seedData.split(" ")
+            .chunked(2)
+            .map { makeSeedRange(it) }
+    }
+
+    private fun makeSeedRange(seedPair: List<String>): LongRange {
+        val start = seedPair.first().toLong()
+        val length = seedPair.last().toLong()
+        return LongRange(start, start + length - 1)
     }
 
     fun parseMapDataLine(line: String): MapRange {
@@ -78,41 +79,71 @@ class Day05DataParser {
 
 }
 
-class MapRange(val destinationStart: Long, val sourceStart: Long, rangeLength: Long) {
+class MapRange(destinationStart: Long, sourceStart: Long, rangeLength: Long) {
     private val thisSourceRange = LongRange(sourceStart, sourceStart + rangeLength - 1)
+    private val thisDestinationRange = LongRange(destinationStart, destinationStart + rangeLength - 1)
 
     fun intersectsSource(otherSourceRange: LongRange): Boolean {
         return thisSourceRange.contains(otherSourceRange.first) ||
                 thisSourceRange.contains(otherSourceRange.last) ||
-                otherSourceRange.
+                (otherSourceRange.first < thisSourceRange.first && otherSourceRange.last > thisSourceRange.last)
     }
 
     fun convert(otherSourceRange: LongRange): List<LongRange> {
-        if (isFullyContained(otherSourceRange)) {
+        if (thisSourceRange.contains(otherSourceRange.first) && thisSourceRange.contains(otherSourceRange.last)) {
+            // Other source is fully contained in this source range
             return listOf(toDestination(otherSourceRange))
         }
         if (otherSourceRange.first < thisSourceRange.first) {
-            val unmapped = LongRange(otherSourceRange.first, thisSourceRange.first - 1)
-            val mappedSize = otherSourceRange.last - thisSourceRange.first
-            val mapped = LongRange(destinationStart, destinationStart + mappedSize)
+            if (otherSourceRange.last > thisSourceRange.last) {
+                // Other source fully overlaps mapping source, with extra on both sides
+                val unmappedLeft = LongRange(otherSourceRange.first, thisSourceRange.first - 1)
+                val unmappedRight = LongRange(thisSourceRange.last + 1, otherSourceRange.last)
+                return listOf(unmappedLeft, unmappedRight, thisDestinationRange)
+            }
+            if (otherSourceRange.last >= thisSourceRange.first) {
+                // Other source partially overlaps mapping source on the left
+                val unmappedLeft = LongRange(otherSourceRange.first, thisSourceRange.first - 1)
+                val mappedSize = otherSourceRange.last - thisSourceRange.first + 1
+                val mapped = LongRange(thisDestinationRange.first, thisDestinationRange.first + mappedSize - 1)
+                return listOf(unmappedLeft, mapped)
+            }
+            // Other source is left of mapping source, and doesn't overlap
+            listOf(otherSourceRange)
         }
+        if (otherSourceRange.last > thisSourceRange.last && otherSourceRange.first <= thisSourceRange.last) {
+            // Other source partially overlaps mapping source on the right
+            val unmappedRight = LongRange(thisSourceRange.last + 1, otherSourceRange.last)
+            val otherSize = otherSourceRange.last - otherSourceRange.first + 1
+            val unmappedSize = unmappedRight.last - unmappedRight.first + 1
+            val mappedSize = otherSize - unmappedSize
+            val mapped = LongRange(thisDestinationRange.last - mappedSize + 1, thisDestinationRange.last)
+            return listOf(mapped, unmappedRight)
+        }
+        // Other source is right of mapping source, and doesn't overlap
         return listOf(otherSourceRange)
     }
 
     private fun toDestination(otherSourceRange: LongRange): LongRange {
         val startOffset = otherSourceRange.first - thisSourceRange.first
-        val start = destinationStart + startOffset
+        val start = thisDestinationRange.first() + startOffset
         val end = start + otherSourceRange.last - otherSourceRange.first
         return LongRange(start, end)
     }
-
-    private fun isFullyContained(otherSourceRange: LongRange) =
-        thisSourceRange.contains(otherSourceRange.first) && thisSourceRange.contains(otherSourceRange.last)
 }
 
 class MapLookup(val mapRanges: List<MapRange>) {
-    fun destinationFor(sourceRange: LongRange): List<LongRange> {
-//        return mapRanges.find { it.contains(source) }?.convert(source) ?: source
-        return listOf(sourceRange)
+    fun destinationsFor(sourceRange: LongRange): List<LongRange> {
+        val sources = mutableListOf(sourceRange)
+        val result = mutableListOf<LongRange>()
+        mapRanges.filter { it.intersectsSource(sourceRange) }.forEach {
+            if (it.intersectsSource(sourceRange)) {
+                result.addAll(it.convert(sourceRange))
+            }
+        }
+//        if (intersectingRanges.isNotEmpty()) {
+//            return intersectingRanges.flatMap { it.convert(sourceRange) }
+//        }
+        return result
     }
 }
