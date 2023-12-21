@@ -1,5 +1,7 @@
 package com.exubero.aoc.day05
 
+import java.util.Stack
+
 fun main() {
     println("Advent of Code: Day 05")
 
@@ -130,20 +132,57 @@ class MapRange(destinationStart: Long, sourceStart: Long, rangeLength: Long) {
         val end = start + otherSourceRange.last - otherSourceRange.first
         return LongRange(start, end)
     }
+
+    fun applyDestinationMapping(range: LongRange): Pair<List<LongRange>, List<LongRange>> {
+        if (thisSourceRange.contains(range.first) && thisSourceRange.contains(range.last)) {
+            // Other source is fully contained in this source range
+            return Pair(listOf(toDestination(range)), listOf())
+        }
+        if (range.first < thisSourceRange.first) {
+            if (range.last > thisSourceRange.last) {
+                // Other source fully overlaps mapping source, with extra on both sides
+                val unmappedLeft = LongRange(range.first, thisSourceRange.first - 1)
+                val unmappedRight = LongRange(thisSourceRange.last + 1, range.last)
+                return Pair(listOf(thisDestinationRange), listOf(unmappedLeft, unmappedRight))
+            }
+            if (range.last >= thisSourceRange.first) {
+                // Other source partially overlaps mapping source on the left
+                val outsideLeft = LongRange(range.first, thisSourceRange.first - 1)
+                val insideSize = range.last - thisSourceRange.first + 1
+                val inside = LongRange(thisSourceRange.first, thisSourceRange.first + insideSize - 1)
+                return Pair(listOf(toDestination(inside)), listOf(outsideLeft))
+            }
+            // Other source is left of mapping source, and doesn't overlap
+            return Pair(listOf(), listOf(range))
+        }
+        if (range.last > thisSourceRange.last && range.first <= thisSourceRange.last) {
+            // Other source partially overlaps mapping source on the right
+            val outsideRight = LongRange(thisSourceRange.last + 1, range.last)
+            val originalSize = range.last - range.first + 1
+            val outsideSize = outsideRight.last - outsideRight.first + 1
+            val insideSize = originalSize - outsideSize
+            val inside = LongRange(thisSourceRange.last - insideSize + 1, thisSourceRange.last)
+            return Pair(listOf(toDestination(inside)), listOf(outsideRight))
+        }
+        // Other source is right of mapping source, and doesn't overlap
+        return Pair(listOf(), listOf(range))
+    }
 }
 
 class MapLookup(val mapRanges: List<MapRange>) {
     fun destinationsFor(sourceRange: LongRange): List<LongRange> {
-        val sources = mutableListOf(sourceRange)
+        val sources = Stack<LongRange>()
+        sources.push(sourceRange)
         val result = mutableListOf<LongRange>()
-        mapRanges.filter { it.intersectsSource(sourceRange) }.forEach {
-            if (it.intersectsSource(sourceRange)) {
-                result.addAll(it.convert(sourceRange))
+        mapRanges.forEach {
+            if (sources.isNotEmpty()) {
+                val source = sources.pop()
+                val mappedUnmapped = it.applyDestinationMapping(source)
+                result.addAll(mappedUnmapped.first)
+                mappedUnmapped.second.forEach { sources.push(it) }
             }
         }
-//        if (intersectingRanges.isNotEmpty()) {
-//            return intersectingRanges.flatMap { it.convert(sourceRange) }
-//        }
+        result.addAll(sources)
         return result
     }
 }
